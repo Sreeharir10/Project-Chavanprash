@@ -11,14 +11,16 @@ import inspect
 
 # NEW: Import your logger instance
 from app.core.logger import logs
-
-
+from app.routes import ingest
 
 app = FastAPI(
     title="Self Healer backend",
     description="This is the backend for my full-stack application.",
     version="1.0.0",
 )
+
+app.include_router(ingest.router, prefix="/api/v1", tags=["ingestion"])
+
 #Middleware to log every request
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
