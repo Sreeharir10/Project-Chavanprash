@@ -31,34 +31,38 @@ class Neo4jHandler:
             return
 
         with self.driver.session() as session:
-            # Create Nodes
             for node in parsed_repo.nodes:
-                if node.type == "file":
-                    session.run(
-                        "MERGE (f:File {path: $path, name: $name})",
-                        path=node.path, name=node.name
-                    )
-                elif node.type == "class":
-                    session.run(
-                        "MERGE (c:Class {name: $name, path: $path})",
-                        name=node.name, path=node.path
-                    )
-                elif node.type == "function":
-                    session.run(
-                        "MERGE (f:Function {name: $name, path: $path})",
-                        name=node.name, path=node.path
-                    )
+                node_id = f"{node.path}::{node.type}::{node.name}"
+                props = {
+                    "id": node_id,
+                    "name": node.name,
+                    "filepath": node.path,
+                    "type": node.type,
+                }
+                if node.start_line:
+                    props["start_line"] = node.start_line
+                if node.end_line:
+                    props["end_line"] = node.end_line
+                # Upsert node (no raw_code)
+                session.run(
+                    f"MERGE (n:{node.type.capitalize()} {{id: $id}}) SET n += $props",
+                    id=node_id, props=props
+                )
 
-            # Create Edges
+            # Edges: expects edge.source and edge.target to be deterministic IDs
             for edge in parsed_repo.edges:
-                if edge.type == "defines":
-                    # This is a bit simplified. We need to match nodes correctly.
-                    # Assuming source is parent name/path and target is child full name
-                    # But my parser logic for names was a bit mixed. 
-                    # Let's rely on the fact that we can match by name for now, 
-                    # but in production we need unique IDs (filepath + name).
-                    pass 
-                    # TODO: Improve edge creation logic based on unique identifiers
-                    
-                # For now, let's just log that we would create edges
-                # session.run(...)
+                if edge.type == "calls":
+                    session.run(
+                        "MERGE (src:Function {id: $src_id}) MERGE (dst:Function {id: $dst_id}) MERGE (src)-[:CALLS]->(dst)",
+                        src_id=edge.source, dst_id=edge.target
+                    )
+                elif edge.type == "defines":
+                    session.run(
+                        "MERGE (src {id: $src_id}) MERGE (dst {id: $dst_id}) MERGE (src)-[:DEFINES]->(dst)",
+                        src_id=edge.source, dst_id=edge.target
+                    )
+                elif edge.type == "imports":
+                    session.run(
+                        "MERGE (src:File {id: $src_id}) MERGE (dst:File {id: $dst_id}) MERGE (src)-[:IMPORTS]->(dst)",
+                        src_id=edge.source, dst_id=edge.target
+                    )

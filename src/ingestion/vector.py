@@ -17,24 +17,25 @@ class VectorDBHandler:
         ids = []
 
         for node in parsed_repo.nodes:
-            if node.type in ["function", "class"] and node.content:
-                # Use the extracted content
+            if node.type in ["function", "class", "model"] and node.content:
+                node_id = f"{node.path}::{node.type}::{node.name}"
+                # dependencies: expects node.dependencies (list of node_ids) or empty
+                dependencies = getattr(node, "dependencies", [])
+                if isinstance(dependencies, list):
+                    dependencies_str = ",".join(dependencies)
+                else:
+                    dependencies_str = str(dependencies)
                 documents.append(node.content)
                 metadatas.append({
-                    "path": node.path, 
-                    "type": node.type,
+                    "node_id": node_id,
                     "name": node.name,
-                    "parent": node.parent or ""
+                    "filepath": node.path,
+                    "type": node.type,
+                    "start_line": node.start_line,
+                    "end_line": node.end_line,
+                    "dependencies": dependencies_str
                 })
-                # Create a unique ID
-                unique_id = f"{node.path}::{node.name}::{node.start_line}"
-                ids.append(unique_id)
-            
-            if node.type == "file" and node.content:
-                 # Chunking files is better than nothing
-                 documents.append(node.content[:2000]) # Simple truncation for now
-                 metadatas.append({"path": node.path, "type": "file", "name": node.name})
-                 ids.append(node.path)
+                ids.append(node_id)
 
         if documents:
             self.collection.add(
