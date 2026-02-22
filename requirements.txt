@@ -8,3 +8,10 @@ chromadb
 sentence-transformers
 python-dotenv
 requests
+tree-sitter
+tree-sitter-python
+# For HuggingFace model support
+transformers
+torch
+# For CORS and logging
+python-multipart
