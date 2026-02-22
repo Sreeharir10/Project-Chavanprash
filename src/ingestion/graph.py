@@ -1,6 +1,6 @@
 from neo4j import GraphDatabase
-from app.core.config import settings
-from app.ingestion.parser import ParsedRepo
+from core.config import settings
+from ingestion.parser import CodeParser
 import logging
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ class Neo4jHandler:
         with self.driver.session() as session:
             session.run("MATCH (n) DETACH DELETE n")
 
-    def ingest(self, parsed_repo: ParsedRepo):
+    def ingest(self, parsed_repo: CodeParser):
         if not self.driver:
             logger.warning("Neo4j driver not initialized. Skipping graph ingestion.")
             return

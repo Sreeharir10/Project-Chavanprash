@@ -1,7 +1,7 @@
 import os
 import shutil
 from git import Repo
-from app.core.config import settings
+from core.config import settings
 import logging
 
 logger = logging.getLogger(__name__)

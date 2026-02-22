@@ -1,7 +1,7 @@
-from app.ingestion.clone import RepoCloner
-from app.ingestion.parser import CodeParser
-from app.ingestion.graph import Neo4jHandler
-from app.ingestion.vector import VectorDBHandler
+from ingestion.clone import RepoCloner
+from ingestion.parser import CodeParser
+from ingestion.graph import Neo4jHandler
+from ingestion.vector import VectorDBHandler
 import logging
 import os
 

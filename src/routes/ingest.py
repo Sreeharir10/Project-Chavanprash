@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel
-from app.ingestion.pipeline import IngestionPipeline
+from ingestion.pipeline import IngestionPipeline
 import os
-from app.core.config import settings
+from core.config import settings
 
 router = APIRouter()
 

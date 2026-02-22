@@ -18,8 +18,9 @@ class Settings(BaseSettings):
     REPO_STORAGE_PATH: str = "./temp_repos"    # Temp folder for cloned repos
 
     # Optionally add TEMP_DIR for custom ingestion
-    TEMP_DIR: Optional[str] = None              # Custom temp dir for ingestion (overrides REPO_STORAGE_PATH)
+    TEMP_DIR: Optional[str] = None   # Custom temp dir for ingestion (overrides REPO_STORAGE_PATH)
 
+    LOGGER: int = 10                  # Log file name
     class Config:
         env_file = ".env"
 

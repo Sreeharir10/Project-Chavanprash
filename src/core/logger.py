@@ -3,7 +3,7 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 from fastapi import Request
-from app.core.config import settings
+from .config import settings
 
 
 class LoggerConfig:
@@ -151,5 +151,5 @@ logs = LoggerConfig(
     env=settings.LOGGER, 
     logger_name="APP-BE", 
     log_directory="logger", 
-    log_file="app.log"
+    log_file="src.log"
 )

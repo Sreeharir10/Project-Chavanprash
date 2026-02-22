@@ -1,7 +1,7 @@
 import chromadb
 from chromadb.config import Settings as ChromaSettings
-from app.core.config import settings
-from app.ingestion.parser import ParsedRepo
+from core.config import settings
+from ingestion.parser import CodeParser
 import logging
 
 logger = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ class VectorDBHandler:
         self.client = chromadb.PersistentClient(path=settings.CHROMA_DB_DIR)
         self.collection = self.client.get_or_create_collection(name="code_embeddings")
 
-    def ingest(self, parsed_repo: ParsedRepo):
+    def ingest(self, parsed_repo: CodeParser):
         documents = []
         metadatas = []
         ids = []

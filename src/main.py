@@ -10,8 +10,8 @@ import logging
 import inspect
 
 # NEW: Import your logger instance
-from app.core.logger import logs
-from app.routes import ingest
+from core.logger import logs
+from routes import ingest
 
 app = FastAPI(
     title="Self Healer backend",
