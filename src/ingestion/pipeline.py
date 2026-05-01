@@ -42,10 +42,29 @@ class IngestionPipeline:
             node.name = payload["name"]
             node.path = payload["filepath"]
             node.content = payload["raw_code"]
-            node.start_line = None
-            node.end_line = None
+            node.start_line = payload.get("start_line")
+            node.end_line = payload.get("end_line")
             node.parent = None
             node.dependencies = payload.get("calls", [])
+
+            # Extract docstring and comments (simple heuristics)
+            # Docstring: first string literal in the function body
+            lines = payload["raw_code"].splitlines()
+            docstring = None
+            if len(lines) > 1 and (lines[1].strip().startswith('"""') or lines[1].strip().startswith("''")):
+                docstring = lines[1].strip()
+                # If multi-line docstring, join until closing
+                if not (docstring.endswith('"""') or docstring.endswith("''")):
+                    for l in lines[2:]:
+                        docstring += '\n' + l
+                        if l.strip().endswith('"""') or l.strip().endswith("'''"):
+                            break
+            node.docstring = docstring
+
+            # Comments: collect lines starting with #
+            comments = [l.strip() for l in lines if l.strip().startswith('#')]
+            node.comments = comments
+
             nodes.append(node)
             # Edges for calls
             for callee in payload.get("calls", []):
